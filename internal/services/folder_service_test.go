@@ -199,3 +199,69 @@ func TestFolderService_GetFolders(t *testing.T) {
 		})
 	}
 }
+
+func TestFolderService_Deletion(t *testing.T) {
+	testCases := []struct {
+		name         string
+		folders      map[string]map[string]models.Folder
+		targetUser   string
+		targetFolder string
+	}{
+		{
+			name: "Delete an existing folder for the user",
+			folders: map[string]map[string]models.Folder{
+				"dalaoqi": {
+					"myfolder": {
+						Name:        "myfolder",
+						Owner:       "dalaoqi",
+						Description: "My folder description",
+					},
+				},
+			},
+			targetUser:   "dalaoqi",
+			targetFolder: "myfolder",
+		},
+		{
+			name: "Delete a non-existing folder for the user",
+			folders: map[string]map[string]models.Folder{
+				"dalaoqi": {
+					"myfolder": {
+						Name:        "myfolder",
+						Owner:       "dalaoqi",
+						Description: "My folder description",
+					},
+				},
+			},
+			targetUser:   "dalaoqi",
+			targetFolder: "otherfolder",
+		},
+		{
+			name: "Delete a folder for a non-existing user",
+			folders: map[string]map[string]models.Folder{
+				"dalaoqi": {
+					"myfolder": {
+						Name:        "myfolder",
+						Owner:       "john",
+						Description: "My folder description",
+					},
+				},
+			},
+			targetUser:   "other",
+			targetFolder: "myfolder",
+		},
+	}
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
+			folderService := &FolderService{
+				Folders: test.folders,
+			}
+			// Perform the test by calling FolderService.DeleteFolder() and check the error message
+			folderService.DeleteFolder(test.targetUser, test.targetFolder)
+
+			// Check if the folder has been deleted from the folders map
+			if _, exists := folderService.Folders[test.targetUser][test.targetFolder]; exists {
+				t.Errorf("Folder %s still exists for User %s", test.targetFolder, test.targetUser)
+			}
+		})
+	}
+}

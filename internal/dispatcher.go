@@ -130,6 +130,26 @@ func (d *Dispatcher) Exec(args []string) error {
 			}
 		}
 		return nil
+	case "delete-folder":
+		if len(args) < 3 {
+			return fmt.Errorf("Error: Insufficient arguments")
+		}
+		userName := args[1]
+		folderName := args[2]
+
+		// Check if the user exists
+		if !d.userService.Exist(userName) {
+			return fmt.Errorf("Error: The %v doesn't exist.", userName)
+		}
+
+		// Check if the folder exists for the user
+		if !d.folderService.Exist(userName, folderName) {
+			return fmt.Errorf("Error: The %s doesn't exist", folderName)
+		}
+
+		d.folderService.DeleteFolder(userName, folderName)
+		fmt.Printf("Delete %v successfully.\n", folderName)
+		return nil
 	default:
 		return fmt.Errorf("Error: Unrecognized command")
 	}
