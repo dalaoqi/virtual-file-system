@@ -86,6 +86,14 @@ func (s *FolderService) GetFolders(userName, sortBy, sortOrder string) ([]models
 	return folderList, nil
 }
 
+func (s *FolderService) DeleteFolder(userName, folderName string) {
+	userName = strings.ToLower(userName)
+	folderName = strings.ToLower(folderName)
+
+	delete(s.Folders[userName], folderName)
+	return
+}
+
 func (s *FolderService) Exist(userName, folderName string) bool {
 	userName = strings.ToLower(userName)
 	folderName = strings.ToLower(folderName)
