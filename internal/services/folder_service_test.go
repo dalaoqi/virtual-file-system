@@ -1,7 +1,9 @@
 package services
 
 import (
+	"reflect"
 	"testing"
+	"time"
 	"virtual-file-system/internal/models"
 
 	"github.com/stretchr/testify/assert"
@@ -105,6 +107,95 @@ func TestFolderService_Exist(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			exist := service.Exist(test.username, test.foldername)
 			assert.Equal(t, test.expected, exist)
+		})
+	}
+}
+
+func TestFolderService_GetFolders(t *testing.T) {
+	folderService := NewFolderService()
+
+	// Create some folders for a user
+	folder1 := models.Folder{
+		Name:        "folder1",
+		Owner:       "dalaoqi",
+		Description: "Folder 1",
+		CreatedAt:   time.Now().Add(-time.Hour),
+	}
+	folder2 := models.Folder{
+		Name:        "folder2",
+		Owner:       "dalaoqi",
+		Description: "Folder 2",
+		CreatedAt:   time.Now().Add(-2 * time.Hour),
+	}
+	folder3 := models.Folder{
+		Name:        "folder3",
+		Owner:       "dalaoqi",
+		Description: "Folder 3",
+		CreatedAt:   time.Now().Add(-3 * time.Hour),
+	}
+
+	foldersMap := make(map[string]models.Folder)
+	foldersMap[folder1.Name] = folder1
+	foldersMap[folder2.Name] = folder2
+	foldersMap[folder3.Name] = folder3
+
+	folderService.Folders["dalaoqi"] = foldersMap
+	folderService.Folders["dalaoqiEmpty"] = make(map[string]models.Folder)
+
+	testCases := []struct {
+		name       string
+		userName   string
+		sortField  string
+		sortOrder  string
+		wantResult []models.Folder
+	}{
+		{
+			name:       "Sort by name in ascending order",
+			userName:   "dalaoqi",
+			sortField:  "name",
+			sortOrder:  "asc",
+			wantResult: []models.Folder{folder1, folder2, folder3},
+		},
+		{
+			name:       "Sort by name in descending order",
+			userName:   "dalaoqi",
+			sortField:  "name",
+			sortOrder:  "desc",
+			wantResult: []models.Folder{folder3, folder2, folder1},
+		},
+		{
+			name:       "Sort by created at in ascending order",
+			userName:   "dalaoqi",
+			sortField:  "created",
+			sortOrder:  "asc",
+			wantResult: []models.Folder{folder3, folder2, folder1},
+		},
+		{
+			name:       "Sort by created at in descending order",
+			userName:   "dalaoqi",
+			sortField:  "created",
+			sortOrder:  "desc",
+			wantResult: []models.Folder{folder1, folder2, folder3},
+		},
+		{
+			name:       "User doesn't have any folders",
+			userName:   "dalaoqiEmpty",
+			sortField:  "name",
+			sortOrder:  "asc",
+			wantResult: []models.Folder{},
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
+			gotResult, err := folderService.GetFolders(test.userName, test.sortField, test.sortOrder)
+			if err != nil {
+				t.Errorf("Unexpected error: %v", err)
+			}
+
+			if !reflect.DeepEqual(gotResult, test.wantResult) {
+				t.Errorf("Result mismatch, Got: %v, Want: %v", gotResult, test.wantResult)
+			}
 		})
 	}
 }
