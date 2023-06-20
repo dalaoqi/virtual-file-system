@@ -77,6 +77,59 @@ func (d *Dispatcher) Exec(args []string) error {
 		}
 		fmt.Printf("Create %v successfully.\n", folderName)
 		return nil
+	case "list-folders":
+		if len(args) < 2 {
+			return fmt.Errorf("Error: Insufficient arguments")
+		}
+		userName := args[1]
+		sortBy := "name"
+		sortOrder := "asc"
+
+		if len(args) > 2 {
+			// Check if the sort flag is provided
+			sortFlag := args[2]
+			switch sortFlag {
+			case "--sort-name":
+				sortBy = "name"
+			case "--sort-created":
+				sortBy = "created"
+			default:
+				return fmt.Errorf("Error: Invalid sort flag")
+			}
+
+			if len(args) > 3 {
+				// Check if the sort order is provided
+				sortOrderFlag := args[3]
+				switch sortOrderFlag {
+				case "asc":
+					sortOrder = "asc"
+				case "desc":
+					sortOrder = "desc"
+				default:
+					return fmt.Errorf("Error: Invalid sort order")
+				}
+			}
+		}
+
+		// Check if the user exists
+		if !d.userService.Exist(userName) {
+			return fmt.Errorf("Error: The %v doesn't exist.", userName)
+		}
+
+		folders, err := d.folderService.GetFolders(userName, sortBy, sortOrder)
+		if err != nil {
+			return err
+		}
+
+		if len(folders) == 0 {
+			fmt.Println("Warning: The folder is empty.")
+		} else {
+			for _, folder := range folders {
+				createdAt := folder.CreatedAt.Format("2006-01-02 15:04:05")
+				fmt.Printf("%s %s %s %s\n", folder.Name, folder.Description, createdAt, folder.Owner)
+			}
+		}
+		return nil
 	default:
 		return fmt.Errorf("Error: Unrecognized command")
 	}
