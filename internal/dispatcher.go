@@ -69,7 +69,7 @@ func (d *Dispatcher) Exec(args []string) error {
 
 		// Check if the folder name already exists for the user
 		if d.folderService.Exist(userName, folderName) {
-			return fmt.Errorf("Error: The folder name '%s' already exists for the user '%s'.", folderName, userName)
+			return fmt.Errorf("Error: The folder %s has already existed.", folderName)
 		}
 		err := d.folderService.CreateFolder(userName, folderName, description)
 		if err != nil {
@@ -149,6 +149,37 @@ func (d *Dispatcher) Exec(args []string) error {
 
 		d.folderService.DeleteFolder(userName, folderName)
 		fmt.Printf("Delete %v successfully.\n", folderName)
+		return nil
+	case "rename-folder":
+		if len(args) < 4 {
+			return fmt.Errorf("Error: Insufficient arguments")
+		}
+		userName := args[1]
+		folderName := args[2]
+		newFolderName := args[3]
+
+		// Check if the user exists
+		if !d.userService.Exist(userName) {
+			return fmt.Errorf("Error: The %v doesn't exist.", userName)
+		}
+
+		// Check if the folder exists for the user
+		if !d.folderService.Exist(userName, folderName) {
+			return fmt.Errorf("Error: The %v doesn't exist", folderName)
+		}
+
+		// Check if the new folder name contains invalid characters
+		if utils.ExistInvalidChars(newFolderName) {
+			return fmt.Errorf("Error: The new folder name %s contains invalid chars.", newFolderName)
+		}
+
+		// Check if the folder exists for the user
+		if d.folderService.Exist(userName, newFolderName) {
+			return fmt.Errorf("Error: The %v has already existed.", newFolderName)
+		}
+
+		d.folderService.RenameFolder(userName, folderName, newFolderName)
+		fmt.Printf("Rename %s to %s successfully.\n", folderName, newFolderName)
 		return nil
 	default:
 		return fmt.Errorf("Error: Unrecognized command")

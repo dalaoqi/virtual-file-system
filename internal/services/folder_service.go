@@ -94,6 +94,18 @@ func (s *FolderService) DeleteFolder(userName, folderName string) {
 	return
 }
 
+func (s *FolderService) RenameFolder(userName, folderName, newFolderName string) {
+	userName = strings.ToLower(userName)
+	folderName = strings.ToLower(folderName)
+	newFolderName = strings.ToLower(newFolderName)
+
+	folder := s.Folders[userName][folderName]
+	folder.Name = newFolderName
+	s.Folders[userName][newFolderName] = folder
+	delete(s.Folders[userName], folderName)
+	return
+}
+
 func (s *FolderService) Exist(userName, folderName string) bool {
 	userName = strings.ToLower(userName)
 	folderName = strings.ToLower(folderName)

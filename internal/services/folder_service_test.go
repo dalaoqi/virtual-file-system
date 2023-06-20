@@ -265,3 +265,49 @@ func TestFolderService_Deletion(t *testing.T) {
 		})
 	}
 }
+
+func TestFolderService_RenameFolder(t *testing.T) {
+	testCases := []struct {
+		name          string
+		folders       map[string]map[string]models.Folder
+		targetUser    string
+		targetFolder  string
+		newFolderName string
+	}{
+		{
+			name: "Rename an existing folder",
+			folders: map[string]map[string]models.Folder{
+				"dalaoqi": {
+					"myfolder": {
+						Name:        "myfolder",
+						Owner:       "dalaoqi",
+						Description: "My folder description",
+					},
+				},
+			},
+			targetUser:    "dalaoqi",
+			targetFolder:  "myfolder",
+			newFolderName: "newfolder",
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
+			folderService := &FolderService{
+				Folders: test.folders,
+			}
+
+			// Perform the test by calling FolderService.RenameFolder() and check the output
+			folderService.RenameFolder(test.targetUser, test.targetFolder, test.newFolderName)
+
+			// Check if the folder has been renamed
+			if _, originalExist := folderService.Folders[test.targetUser][test.targetFolder]; originalExist {
+				t.Errorf("Folder %s still exists for User %s", test.targetFolder, test.targetUser)
+			}
+
+			if _, renameExist := folderService.Folders[test.targetUser][test.newFolderName]; !renameExist {
+				t.Errorf("Folder %s is not existed for User %s", test.newFolderName, test.targetUser)
+			}
+		})
+	}
+}
