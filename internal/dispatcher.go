@@ -122,7 +122,7 @@ func (d *Dispatcher) Exec(args []string) error {
 		}
 
 		if len(folders) == 0 {
-			fmt.Println("Warning: The folder is empty.")
+			fmt.Printf("Warning: The %s doesn't have any folders.\n", userName)
 		} else {
 			for _, folder := range folders {
 				createdAt := folder.CreatedAt.Format("2006-01-02 15:04:05")
