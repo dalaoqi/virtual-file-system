@@ -1,9 +1,7 @@
 package services
 
 import (
-	"fmt"
 	"virtual-file-system/internal/models"
-	"virtual-file-system/internal/utils"
 )
 
 // UserService handles user-related operations
@@ -20,17 +18,6 @@ func NewUserService() *UserService {
 
 // Register registers a new user
 func (s *UserService) Register(name string) error {
-	// Check if the user already exists
-	if s.Exist(name) {
-		return fmt.Errorf("Error: The %v has already existed.", name)
-	}
-
-	// Check if the name contains invalid characters
-	if utils.ExistInvalidChars(name) {
-		return fmt.Errorf("Error: The %v contains invalid chars.", name)
-	}
-
-	// Register the new user
 	s.Users[name] = models.User{Name: name}
 	return nil
 }
