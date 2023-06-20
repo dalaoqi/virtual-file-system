@@ -27,6 +27,14 @@ func TestUserRegister(t *testing.T) {
 			expected:   "Error: The dalaoqi has already existed.",
 		},
 		{
+			name: "Add a duplicated user (upper)",
+			users: map[string]models.User{
+				"dalaoqi": {Name: "dalaoqi"},
+			},
+			targetName: "DALAOQI",
+			expected:   "Error: The dalaoqi has already existed.",
+		},
+		{
 			name:       "Add a user with invalid chars",
 			users:      map[string]models.User{},
 			targetName: "dalaoqi&^%$#.",

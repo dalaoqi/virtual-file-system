@@ -1,6 +1,7 @@
 package services
 
 import (
+	"strings"
 	"virtual-file-system/internal/models"
 )
 
@@ -18,11 +19,13 @@ func NewUserService() *UserService {
 
 // Register registers a new user
 func (s *UserService) Register(name string) error {
+	name = strings.ToLower(name)
 	s.Users[name] = models.User{Name: name}
 	return nil
 }
 
 func (s *UserService) Exist(name string) bool {
+	name = strings.ToLower(name)
 	_, exist := s.Users[name]
 	return exist
 }

@@ -82,6 +82,12 @@ func TestFolderService_Exist(t *testing.T) {
 			expected:   true,
 		},
 		{
+			name:       "Existing folder name (upper)",
+			username:   "DALAOQI",
+			foldername: "FOLDER1",
+			expected:   true,
+		},
+		{
 			name:       "Non-existing folder name",
 			username:   "dalaoqi",
 			foldername: "folder3",

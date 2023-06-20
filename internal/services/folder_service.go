@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strings"
 	"virtual-file-system/internal/models"
 )
 
@@ -17,6 +18,9 @@ func NewFolderService() *FolderService {
 }
 
 func (s *FolderService) CreateFolder(userName, folderName, description string) error {
+	userName = strings.ToLower(userName)
+	folderName = strings.ToLower(folderName)
+
 	// Check if the user's folder map exists
 	if s.Folders[userName] == nil {
 		s.Folders[userName] = make(map[string]models.Folder)
@@ -40,6 +44,9 @@ func (s *FolderService) CreateFolder(userName, folderName, description string) e
 }
 
 func (s *FolderService) Exist(userName, folderName string) bool {
+	userName = strings.ToLower(userName)
+	folderName = strings.ToLower(folderName)
+
 	folders, ok := s.Folders[userName]
 	if !ok {
 		return false
