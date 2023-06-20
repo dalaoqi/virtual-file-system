@@ -21,7 +21,7 @@ func NewUserService() *UserService {
 // Register registers a new user
 func (s *UserService) Register(name string) error {
 	// Check if the user already exists
-	if _, exist := s.Users[name]; exist {
+	if s.Exist(name) {
 		return fmt.Errorf("Error: The %v has already existed.", name)
 	}
 
@@ -33,4 +33,9 @@ func (s *UserService) Register(name string) error {
 	// Register the new user
 	s.Users[name] = models.User{Name: name}
 	return nil
+}
+
+func (s *UserService) Exist(name string) bool {
+	_, exist := s.Users[name]
+	return exist
 }
