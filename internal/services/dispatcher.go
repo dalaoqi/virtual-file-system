@@ -1,21 +1,20 @@
-package vfs
+package services
 
 import (
 	"fmt"
-	"virtual-file-system/internal/services"
 )
 
 type Dispatcher struct {
-	userService   *services.UserService
-	folderService *services.FolderService
-	fileService   *services.FileService
+	userService   *UserService
+	folderService *FolderService
+	fileService   *FileService
 }
 
 // NewDispatcher creates a new instance of Dispatcher
 func NewDispatcher() *Dispatcher {
-	userService := services.NewUserService()
-	folderService := services.NewFolderService(userService)
-	fileService := services.NewFileService(userService, folderService)
+	userService := NewUserService()
+	folderService := NewFolderService(userService)
+	fileService := NewFileService(userService, folderService)
 	return &Dispatcher{
 		userService:   userService,
 		folderService: folderService,
@@ -25,12 +24,11 @@ func NewDispatcher() *Dispatcher {
 
 // Exec executes the command based on the arguments
 func (d *Dispatcher) Exec(args []string) error {
-	if len(args) < 2 {
-		return fmt.Errorf("Error: Insufficient arguments")
-	}
-
 	switch args[0] {
 	case "register":
+		if len(args) < 2 {
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: register [username]")
+		}
 		userName := args[1]
 
 		// Register a new user using the user service
@@ -39,11 +37,11 @@ func (d *Dispatcher) Exec(args []string) error {
 			return err
 		}
 
-		fmt.Printf("Add %v successfully.\n", userName)
+		fmt.Printf("Add %s successfully.\n", userName)
 		return nil
 	case "create-folder":
 		if len(args) < 3 {
-			return fmt.Errorf("Error: Insufficient arguments")
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: create-folder [username] [foldername] [description]?")
 		}
 		userName := args[1]
 		folderName := args[2]
@@ -56,11 +54,11 @@ func (d *Dispatcher) Exec(args []string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Create %v successfully.\n", folderName)
+		fmt.Printf("Create %s successfully.\n", folderName)
 		return nil
 	case "list-folders":
 		if len(args) < 2 {
-			return fmt.Errorf("Error: Insufficient arguments")
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: list-folders [username] [--sort-name|--sort-created] [asc|desc]")
 		}
 		userName := args[1]
 		sortFlag := "--sort-name"
@@ -90,7 +88,7 @@ func (d *Dispatcher) Exec(args []string) error {
 		return nil
 	case "delete-folder":
 		if len(args) < 3 {
-			return fmt.Errorf("Error: Insufficient arguments")
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: delete-folder [username] [foldername]")
 		}
 		userName := args[1]
 		folderName := args[2]
@@ -99,11 +97,11 @@ func (d *Dispatcher) Exec(args []string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Delete %v successfully.\n", folderName)
+		fmt.Printf("Delete %s successfully.\n", folderName)
 		return nil
 	case "rename-folder":
 		if len(args) < 4 {
-			return fmt.Errorf("Error: Insufficient arguments")
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: rename-folder [username] [foldername] [new-folder-name]")
 		}
 		userName := args[1]
 		folderName := args[2]
@@ -117,7 +115,7 @@ func (d *Dispatcher) Exec(args []string) error {
 		return nil
 	case "create-file":
 		if len(args) < 4 {
-			return fmt.Errorf("Error: Insufficient arguments")
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: create-file [username] [foldername] [filename] [description]?")
 		}
 		userName := args[1]
 		folderName := args[2]
@@ -131,11 +129,11 @@ func (d *Dispatcher) Exec(args []string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Create %v in %v/%v successfully.\n", fileName, userName, folderName)
+		fmt.Printf("Create %s in %s/%s successfully.\n", fileName, userName, folderName)
 		return nil
 	case "list-files":
 		if len(args) < 3 {
-			return fmt.Errorf("Error: Insufficient arguments")
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]")
 		}
 		userName := args[1]
 		folderName := args[2]
@@ -169,7 +167,7 @@ func (d *Dispatcher) Exec(args []string) error {
 		return nil
 	case "delete-file":
 		if len(args) < 4 {
-			return fmt.Errorf("Error: Insufficient arguments")
+			return fmt.Errorf("Error: Insufficient arguments\nUsage: delete-file [username] [foldername] [filename]")
 		}
 
 		userName := args[1]
@@ -181,7 +179,7 @@ func (d *Dispatcher) Exec(args []string) error {
 			return err
 		}
 
-		fmt.Printf("Delete %s in %s/%s successfully\n.", fileName, userName, folderName)
+		fmt.Printf("Delete %s in %s/%s successfully.\n", fileName, userName, folderName)
 		return nil
 	default:
 		return fmt.Errorf("Error: Unrecognized command")

@@ -69,7 +69,7 @@ func (s *FolderService) GetFolders(userName, sortFlag, sortOrderFlag string) ([]
 	}
 
 	if len(folderList) == 0 {
-		return folderList, fmt.Errorf("Warning: The %s doesn't have any folders.\n", userName)
+		return folderList, fmt.Errorf("Warning: The %s doesn't have any folders.", userName)
 	}
 
 	// Sort the folders based on the provided flags

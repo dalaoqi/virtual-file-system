@@ -91,7 +91,7 @@ func TestFileService_Creation(t *testing.T) {
 
 			// Perform the test by calling fileService.CreateFolder() and check the error message
 			if err := fileService.CreateFile(test.targetUser, test.targetFolder, test.targetFile, test.description); err != nil && err.Error() != test.expectedErr {
-				t.Errorf("fileService.CreateFile() has error: %v, expected: %v", err.Error(), test.expectedErr)
+				t.Errorf("fileService.CreateFile() has error: %s, expected: %s", err.Error(), test.expectedErr)
 			}
 
 			if len(fileService.UserService.Users[test.targetUser].Folders[test.targetFolder].Files) != test.expectedLen {
@@ -99,14 +99,14 @@ func TestFileService_Creation(t *testing.T) {
 			}
 
 			if test.expectedName != "" && fileService.UserService.Users[test.targetUser].Folders[test.targetFolder].Files[test.targetFile].Name != test.expectedName {
-				t.Errorf("fileService.CreateFile() name = %v, expectedName %v", folderService.UserService.Users[test.targetUser].Folders[test.targetFolder].Files[test.targetFile].Name, test.expectedName)
+				t.Errorf("fileService.CreateFile() name = %s, expectedName %s", folderService.UserService.Users[test.targetUser].Folders[test.targetFolder].Files[test.targetFile].Name, test.expectedName)
 			}
 
 			// Verify the created file's attributes
 			if len(folderService.UserService.Users[test.targetUser].Folders[test.targetFolder].Files) > 0 {
 				file := folderService.UserService.Users[test.targetUser].Folders[test.targetFolder].Files[test.targetFile]
 				if file.Description != test.description {
-					t.Errorf("fileService.CreateFolder() description = %v, expectedDescription %v", file.Description, test.description)
+					t.Errorf("fileService.CreateFolder() description = %s, expectedDescription %s", file.Description, test.description)
 				}
 			}
 		})
@@ -238,11 +238,11 @@ func TestFileService_GetFiles(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			gotResult, err := fileService.GetFiles(test.userName, test.folderName, test.sortFlag, test.sortOrderFlag)
 			if err != nil && err.Error() != test.expectedError {
-				t.Errorf("Unexpected error: %v", err)
+				t.Errorf("Unexpected error: %s", err)
 			}
 
 			if !reflect.DeepEqual(gotResult, test.expectedResult) {
-				t.Errorf("Result mismatch, Got: %v, Want: %v", gotResult, test.expectedResult)
+				t.Errorf("Result mismatch, Got: %s, Want: %s", gotResult, test.expectedResult)
 			}
 		})
 	}
@@ -322,7 +322,7 @@ func TestFileService_DeleteFile(t *testing.T) {
 			err := fileService.DeleteFile(test.userName, test.folderName, test.fileName)
 
 			if err != nil && err.Error() != test.expectedError {
-				t.Errorf("Unexpected error: %v", err)
+				t.Errorf("Unexpected error: %s", err)
 			}
 
 			// Check if the file has been deleted from the folder's files map

@@ -4,16 +4,16 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	vfs "virtual-file-system/internal"
+	"virtual-file-system/internal/services"
 	"virtual-file-system/internal/utils"
 )
 
 var (
-	dispatcher *vfs.Dispatcher
+	dispatcher *services.Dispatcher
 )
 
 func init() {
-	dispatcher = vfs.NewDispatcher()
+	dispatcher = services.NewDispatcher()
 }
 
 func main() {

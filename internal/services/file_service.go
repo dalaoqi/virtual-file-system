@@ -29,7 +29,7 @@ func (s *FileService) CreateFile(userName, folderName, fileName, description str
 
 	// Check if the user exists
 	if !s.UserService.Exist(lowerUserName) {
-		return fmt.Errorf("Error: The %v doesn't exist.", userName)
+		return fmt.Errorf("Error: The %s doesn't exist.", userName)
 	}
 
 	// Check if the folder exists for the user
@@ -39,7 +39,7 @@ func (s *FileService) CreateFile(userName, folderName, fileName, description str
 
 	// Check if the file name contains invalid characters
 	if utils.ExistInvalidChars(lowerFileName) {
-		return fmt.Errorf("Error: The %v contains invalid chars.", fileName)
+		return fmt.Errorf("Error: The %s contains invalid chars.", fileName)
 	}
 
 	// Check if the file name already exists in the folder
@@ -68,7 +68,7 @@ func (s *FileService) GetFiles(userName, folderName, sortFlag, sortOrderFlag str
 
 	// Check if the user exists
 	if !s.UserService.Exist(lowerUserName) {
-		return []models.File{}, fmt.Errorf("Error: The %v doesn't exist.", userName)
+		return []models.File{}, fmt.Errorf("Error: The %s doesn't exist.", userName)
 	}
 
 	// Check if the folder exists for the user

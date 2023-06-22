@@ -69,7 +69,7 @@ func TestFolderService_Creation(t *testing.T) {
 
 			// Perform the test by calling FolderService.CreateFolder() and check the error message
 			if err := folderService.CreateFolder(test.targetUser, test.targetFolder, test.description); err != nil && err.Error() != test.expectedErr {
-				t.Errorf("folderService.CreateFolder() has error: %v, expected: %v", err.Error(), test.expectedErr)
+				t.Errorf("folderService.CreateFolder() has error: %s, expected: %s", err.Error(), test.expectedErr)
 			}
 
 			if len(folderService.UserService.Users[test.targetUser].Folders) != test.expectedLen {
@@ -77,14 +77,14 @@ func TestFolderService_Creation(t *testing.T) {
 			}
 
 			if test.expectedName != "" && folderService.UserService.Users[test.targetUser].Folders[test.targetFolder].Name != test.expectedName {
-				t.Errorf("folderService.CreateFolder() name = %v, expectedName %v", folderService.UserService.Users[test.targetUser].Folders[test.targetFolder].Name, test.expectedName)
+				t.Errorf("folderService.CreateFolder() name = %s, expectedName %s", folderService.UserService.Users[test.targetUser].Folders[test.targetFolder].Name, test.expectedName)
 			}
 
 			// Verify the created folder's attributes
 			if len(folderService.UserService.Users[test.targetUser].Folders) > 0 {
 				folder := folderService.UserService.Users[test.targetUser].Folders[test.targetFolder]
 				if folder.Description != test.description {
-					t.Errorf("folderService.CreateFolder() description = %v, expectedDescription %v", folder.Description, test.description)
+					t.Errorf("folderService.CreateFolder() description = %s, expectedDescription %s", folder.Description, test.description)
 				}
 			}
 		})
@@ -201,11 +201,11 @@ func TestFolderService_GetFolders(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			gotResult, err := folderService.GetFolders(test.userName, test.sortFlag, test.sortOrderFlag)
 			if err != nil && err.Error() != test.expectedError {
-				t.Errorf("Unexpected error: %v", err)
+				t.Errorf("Unexpected error: %s", err)
 			}
 
 			if !reflect.DeepEqual(gotResult, test.expectedResult) {
-				t.Errorf("Result mismatch, Got: %v, Want: %v", gotResult, test.expectedResult)
+				t.Errorf("Result mismatch, Got: %s, Want: %s", gotResult, test.expectedResult)
 			}
 		})
 	}

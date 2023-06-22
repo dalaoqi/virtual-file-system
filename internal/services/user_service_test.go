@@ -48,7 +48,7 @@ func TestUserRegister(t *testing.T) {
 			}
 			// Perform the test by calling UserService.Register() and check the error message
 			if err := UserService.Register(test.targetName); err != nil && err.Error() != test.expected {
-				t.Errorf("UserService.Register() has error: %v, expected: %v", err.Error(), test.expected)
+				t.Errorf("UserService.Register() has error: %s, expected: %s", err.Error(), test.expected)
 			}
 		})
 	}
