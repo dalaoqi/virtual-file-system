@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 	"virtual-file-system/internal/models"
@@ -59,6 +60,63 @@ func (s *FileService) CreateFile(userName, folderName, fileName, description str
 	}
 	s.UserService.Users[lowerUserName].Folders[lowerFolderName] = folder
 	return nil
+}
+
+func (s *FileService) GetFiles(userName, folderName, sortFlag, sortOrderFlag string) ([]models.File, error) {
+	lowerUserName := strings.ToLower(userName)
+	lowerFolderName := strings.ToLower(folderName)
+
+	// Check if the user exists
+	if !s.UserService.Exist(lowerUserName) {
+		return []models.File{}, fmt.Errorf("Error: The %v doesn't exist.", userName)
+	}
+
+	// Check if the folder exists for the user
+	if !s.FolderService.Exist(lowerUserName, lowerFolderName) {
+		return []models.File{}, fmt.Errorf("Error: The %s doesn't exist.", folderName)
+	}
+
+	// Convert map to slice for sorting
+	fileList := make([]models.File, 0)
+	for _, file := range s.UserService.Users[lowerUserName].Folders[lowerFolderName].Files {
+		fileList = append(fileList, file)
+	}
+
+	if len(fileList) == 0 {
+		return fileList, nil
+	}
+
+	// Sort the files based on the provided flags
+	switch sortFlag {
+	case "--sort-name":
+		if sortOrderFlag == "asc" {
+			sort.SliceStable(fileList, func(i, j int) bool {
+				return fileList[i].Name < fileList[j].Name
+			})
+		} else if sortOrderFlag == "desc" {
+			sort.SliceStable(fileList, func(i, j int) bool {
+				return fileList[i].Name > fileList[j].Name
+			})
+		} else {
+			return []models.File{}, fmt.Errorf("Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]")
+		}
+	case "--sort-created":
+		if sortOrderFlag == "asc" {
+			sort.SliceStable(fileList, func(i, j int) bool {
+				return fileList[i].CreatedAt.Before(fileList[j].CreatedAt)
+			})
+		} else if sortOrderFlag == "desc" {
+			sort.SliceStable(fileList, func(i, j int) bool {
+				return fileList[i].CreatedAt.After(fileList[j].CreatedAt)
+			})
+		} else {
+			return []models.File{}, fmt.Errorf("Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]")
+		}
+	default:
+		return []models.File{}, fmt.Errorf("Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]")
+	}
+
+	return fileList, nil
 }
 
 func (s *FileService) Exist(userName, folderName, fileName string) bool {
