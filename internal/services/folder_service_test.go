@@ -165,7 +165,7 @@ func TestFolderService_GetFolders(t *testing.T) {
 		},
 		{
 			name:           "Sort by an invalid flag",
-			userName:       "testuser",
+			userName:       "dalaoqi",
 			sortFlag:       "--sort-invalid",
 			sortOrderFlag:  "asc",
 			expectedResult: []models.Folder{},
@@ -173,7 +173,7 @@ func TestFolderService_GetFolders(t *testing.T) {
 		},
 		{
 			name:           "Sort by name in invalid order",
-			userName:       "testuser",
+			userName:       "dalaoqi",
 			sortFlag:       "--sort-name",
 			sortOrderFlag:  "invalid",
 			expectedResult: []models.Folder{},
