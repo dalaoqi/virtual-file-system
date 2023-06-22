@@ -8,15 +8,18 @@ import (
 type Dispatcher struct {
 	userService   *services.UserService
 	folderService *services.FolderService
+	fileService   *services.FileService
 }
 
 // NewDispatcher creates a new instance of Dispatcher
 func NewDispatcher() *Dispatcher {
 	userService := services.NewUserService()
 	folderService := services.NewFolderService(userService)
+	fileService := services.NewFileService(userService, folderService)
 	return &Dispatcher{
 		userService:   userService,
 		folderService: folderService,
+		fileService:   fileService,
 	}
 }
 
@@ -111,6 +114,24 @@ func (d *Dispatcher) Exec(args []string) error {
 			return err
 		}
 		fmt.Printf("Rename %s to %s successfully.\n", folderName, newFolderName)
+		return nil
+	case "create-file":
+		if len(args) < 4 {
+			return fmt.Errorf("Error: Insufficient arguments")
+		}
+		userName := args[1]
+		folderName := args[2]
+		fileName := args[3]
+		description := ""
+		if len(args) > 4 {
+			description = args[4]
+		}
+
+		err := d.fileService.CreateFile(userName, folderName, fileName, description)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Create %v in %v/%v successfully.\n", fileName, userName, folderName)
 		return nil
 	default:
 		return fmt.Errorf("Error: Unrecognized command")
