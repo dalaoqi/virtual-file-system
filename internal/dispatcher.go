@@ -167,6 +167,22 @@ func (d *Dispatcher) Exec(args []string) error {
 			fmt.Printf("%s %s %s %s %s\n", file.Name, file.Description, createdAt, folderName, userName)
 		}
 		return nil
+	case "delete-file":
+		if len(args) < 4 {
+			return fmt.Errorf("Error: Insufficient arguments")
+		}
+
+		userName := args[1]
+		folderName := args[2]
+		fileName := args[3]
+
+		err := d.fileService.DeleteFile(userName, folderName, fileName)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Delete %s in %s/%s successfully\n.", fileName, userName, folderName)
+		return nil
 	default:
 		return fmt.Errorf("Error: Unrecognized command")
 	}
