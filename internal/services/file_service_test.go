@@ -247,3 +247,88 @@ func TestFileService_GetFiles(t *testing.T) {
 		})
 	}
 }
+
+func TestFileService_DeleteFile(t *testing.T) {
+	// Create a test file
+	file := models.File{
+		Name:      "myfile",
+		CreatedAt: time.Now().Add(-time.Hour),
+	}
+
+	folder := models.Folder{
+		Name:        "myfolder",
+		Description: "myfolder",
+		CreatedAt:   time.Now().Add(-time.Hour),
+		Files: map[string]models.File{
+			"myfile": file,
+		},
+	}
+
+	userService := &UserService{
+		Users: map[string]models.User{
+			"dalaoqi": {
+				Name:    "dalaoqi",
+				Folders: map[string]models.Folder{"myfolder": folder},
+			},
+		},
+	}
+
+	folderService := NewFolderService(userService)
+
+	fileService := &FileService{
+		UserService:   userService,
+		FolderService: folderService,
+	}
+
+	testCases := []struct {
+		name          string
+		userName      string
+		folderName    string
+		fileName      string
+		expectedError string
+	}{
+		{
+			name:          "Delete an existing file",
+			userName:      "dalaoqi",
+			folderName:    "myfolder",
+			fileName:      "myfile",
+			expectedError: "",
+		},
+		{
+			name:          "Delete a non-existing file",
+			userName:      "dalaoqi",
+			folderName:    "myfolder",
+			fileName:      "nonexistentfile",
+			expectedError: "Error: The nonexistentfile doesn't exist.",
+		},
+		{
+			name:          "Delete a file in a non-existing folder",
+			userName:      "dalaoqi",
+			folderName:    "nonexistentfolder",
+			fileName:      "myfile",
+			expectedError: "Error: The nonexistentfolder doesn't exist.",
+		},
+		{
+			name:          "Delete a file in a non-existing user",
+			userName:      "nonexistentuser",
+			folderName:    "myfolder",
+			fileName:      "myfile",
+			expectedError: "Error: The nonexistentuser doesn't exist.",
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
+			err := fileService.DeleteFile(test.userName, test.folderName, test.fileName)
+
+			if err != nil && err.Error() != test.expectedError {
+				t.Errorf("Unexpected error: %v", err)
+			}
+
+			// Check if the file has been deleted from the folder's files map
+			if exists := fileService.Exist(test.userName, test.folderName, test.fileName); exists {
+				t.Errorf("File %s still exists in Folder %s for User %s", test.fileName, test.folderName, test.userName)
+			}
+		})
+	}
+}

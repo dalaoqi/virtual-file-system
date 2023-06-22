@@ -119,6 +119,32 @@ func (s *FileService) GetFiles(userName, folderName, sortFlag, sortOrderFlag str
 	return fileList, nil
 }
 
+func (s *FileService) DeleteFile(userName, folderName, fileName string) error {
+	lowerUserName := strings.ToLower(userName)
+	lowerFolderName := strings.ToLower(folderName)
+	lowerFileName := strings.ToLower(fileName)
+
+	// Check if the user exists
+	if !s.UserService.Exist(lowerUserName) {
+		return fmt.Errorf("Error: The %s doesn't exist.", userName)
+	}
+
+	// Check if the folder exists for the user
+	if !s.FolderService.Exist(lowerUserName, lowerFolderName) {
+		return fmt.Errorf("Error: The %s doesn't exist.", folderName)
+	}
+
+	// Check if the file exists in the folder
+	if !s.Exist(lowerUserName, lowerFolderName, lowerFileName) {
+		return fmt.Errorf("Error: The %s doesn't exist.", fileName)
+	}
+
+	// Delete the file from the folder
+	delete(s.UserService.Users[lowerUserName].Folders[lowerFolderName].Files, lowerFileName)
+
+	return nil
+}
+
 func (s *FileService) Exist(userName, folderName, fileName string) bool {
 	file, exist := s.UserService.Users[userName].Folders[folderName].Files[fileName]
 	if !exist {
