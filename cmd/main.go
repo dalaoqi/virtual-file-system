@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	vfs "virtual-file-system/internal"
+	"virtual-file-system/internal/utils"
 )
 
 var (
@@ -24,8 +24,7 @@ func main() {
 		line := scanner.Text()
 
 		// Split the input into individual arguments
-		args := strings.Split(line, " ")
-
+		args := utils.SplitArguments(line)
 		// Execute the appropriate command using the dispatcher
 		err := dispatcher.Exec(args)
 		if err != nil {
