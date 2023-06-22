@@ -1,7 +1,9 @@
 package services
 
 import (
+	"reflect"
 	"testing"
+	"time"
 	"virtual-file-system/internal/models"
 )
 
@@ -106,6 +108,141 @@ func TestFileService_Creation(t *testing.T) {
 				if file.Description != test.description {
 					t.Errorf("fileService.CreateFolder() description = %v, expectedDescription %v", file.Description, test.description)
 				}
+			}
+		})
+	}
+}
+
+func TestFileService_GetFiles(t *testing.T) {
+	// Create some files for a user
+	file1 := models.File{
+		Name:      "myfile1",
+		CreatedAt: time.Now().Add(-time.Hour),
+	}
+	file2 := models.File{
+		Name:      "myfile2",
+		CreatedAt: time.Now().Add(-2 * time.Hour),
+	}
+	file3 := models.File{
+		Name:      "myfile3",
+		CreatedAt: time.Now().Add(-3 * time.Hour),
+	}
+
+	userService := &UserService{
+		Users: map[string]models.User{
+			"dalaoqi": {
+				Name: "dalaoqi",
+				Folders: map[string]models.Folder{
+					"myfolder": {
+						Name:  "myfolder",
+						Files: map[string]models.File{"myfile1": file1, "myfile2": file2, "myfile3": file3},
+					},
+				},
+			},
+		},
+	}
+
+	folderService := &FolderService{
+		UserService: userService,
+	}
+
+	fileService := &FileService{
+		UserService:   userService,
+		FolderService: folderService,
+	}
+
+	testCases := []struct {
+		name           string
+		userName       string
+		folderName     string
+		sortFlag       string
+		sortOrderFlag  string
+		expectedResult []models.File
+		expectedError  string
+	}{
+		{
+			name:           "Sort by name in ascending order",
+			userName:       "dalaoqi",
+			folderName:     "myfolder",
+			sortFlag:       "--sort-name",
+			sortOrderFlag:  "asc",
+			expectedResult: []models.File{file1, file2, file3},
+			expectedError:  "",
+		},
+		{
+			name:           "Sort by name in descending order",
+			userName:       "dalaoqi",
+			folderName:     "myfolder",
+			sortFlag:       "--sort-name",
+			sortOrderFlag:  "desc",
+			expectedResult: []models.File{file3, file2, file1},
+			expectedError:  "",
+		},
+		{
+			name:           "Sort by created at in ascending order",
+			userName:       "dalaoqi",
+			folderName:     "myfolder",
+			sortFlag:       "--sort-created",
+			sortOrderFlag:  "asc",
+			expectedResult: []models.File{file3, file2, file1},
+			expectedError:  "",
+		},
+		{
+			name:           "Sort by created at in descending order",
+			userName:       "dalaoqi",
+			folderName:     "myfolder",
+			sortFlag:       "--sort-created",
+			sortOrderFlag:  "desc",
+			expectedResult: []models.File{file1, file2, file3},
+			expectedError:  "",
+		},
+		{
+			name:           "Sort by an invalid flag",
+			userName:       "dalaoqi",
+			folderName:     "myfolder",
+			sortFlag:       "--sort-invalid",
+			sortOrderFlag:  "asc",
+			expectedResult: []models.File{},
+			expectedError:  "Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]",
+		},
+		{
+			name:           "Sort by name in invalid order",
+			userName:       "dalaoqi",
+			folderName:     "myfolder",
+			sortFlag:       "--sort-name",
+			sortOrderFlag:  "invalid",
+			expectedResult: []models.File{},
+			expectedError:  "Usage: list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]",
+		},
+		{
+			name:           "User doesn't exist",
+			userName:       "nonexistentuser",
+			folderName:     "myfolder",
+			sortFlag:       "--sort-name",
+			sortOrderFlag:  "asc",
+			expectedResult: []models.File{},
+			expectedError:  "Error: The nonexistentuser doesn't exist.",
+		},
+		{
+			name:           "Folder doesn't exist",
+			userName:       "dalaoqi",
+			folderName:     "nonexistentfolder",
+			sortFlag:       "--sort-name",
+			sortOrderFlag:  "asc",
+			expectedResult: []models.File{},
+			expectedError:  "Error: The nonexistentfolder doesn't exist.",
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
+			gotResult, err := fileService.GetFiles(test.userName, test.folderName, test.sortFlag, test.sortOrderFlag)
+			if err != nil && err.Error() != test.expectedError {
+				t.Errorf("Unexpected error: %v", err)
+			}
+
+			if !reflect.DeepEqual(gotResult, test.expectedResult) {
+				t.Errorf("Result mismatch, Got: %v, Want: %v", gotResult, test.expectedResult)
 			}
 		})
 	}

@@ -169,7 +169,7 @@ func TestFolderService_GetFolders(t *testing.T) {
 			sortFlag:       "--sort-invalid",
 			sortOrderFlag:  "asc",
 			expectedResult: []models.Folder{},
-			expectedError:  "Error: Invalid sort flag",
+			expectedError:  "Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]",
 		},
 		{
 			name:           "Sort by name in invalid order",
@@ -177,7 +177,7 @@ func TestFolderService_GetFolders(t *testing.T) {
 			sortFlag:       "--sort-name",
 			sortOrderFlag:  "invalid",
 			expectedResult: []models.Folder{},
-			expectedError:  "Error: Invalid sort order",
+			expectedError:  "Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]",
 		},
 		{
 			name:           "User doesn't exist",

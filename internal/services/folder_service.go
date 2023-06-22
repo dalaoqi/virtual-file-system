@@ -57,27 +57,6 @@ func (s *FolderService) CreateFolder(userName, folderName, description string) e
 func (s *FolderService) GetFolders(userName, sortFlag, sortOrderFlag string) ([]models.Folder, error) {
 	lowerUserName := strings.ToLower(userName)
 
-	sortBy := "name"
-	sortOrder := "asc"
-
-	switch sortFlag {
-	case "--sort-name":
-		sortBy = "name"
-	case "--sort-created":
-		sortBy = "created"
-	default:
-		return []models.Folder{}, fmt.Errorf("Error: Invalid sort flag")
-	}
-
-	switch sortOrderFlag {
-	case "asc":
-		sortOrder = "asc"
-	case "desc":
-		sortOrder = "desc"
-	default:
-		return []models.Folder{}, fmt.Errorf("Error: Invalid sort order")
-	}
-
 	// Check if the user exists
 	if !s.UserService.Exist(lowerUserName) {
 		return []models.Folder{}, fmt.Errorf("Error: The %v doesn't exist.", userName)
@@ -94,28 +73,35 @@ func (s *FolderService) GetFolders(userName, sortFlag, sortOrderFlag string) ([]
 	}
 
 	// Sort the folders based on the provided flags
-	switch sortBy {
-	case "name":
-		if sortOrder == "asc" {
+	switch sortFlag {
+	case "--sort-name":
+		if sortOrderFlag == "asc" {
 			sort.SliceStable(folderList, func(i, j int) bool {
 				return folderList[i].Name < folderList[j].Name
 			})
-		} else {
+		} else if sortOrderFlag == "desc" {
 			sort.SliceStable(folderList, func(i, j int) bool {
 				return folderList[i].Name > folderList[j].Name
 			})
+		} else {
+			return []models.Folder{}, fmt.Errorf("Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]")
 		}
-	case "created":
-		if sortOrder == "asc" {
+	case "--sort-created":
+		if sortOrderFlag == "asc" {
 			sort.SliceStable(folderList, func(i, j int) bool {
 				return folderList[i].CreatedAt.Before(folderList[j].CreatedAt)
 			})
-		} else {
+		} else if sortOrderFlag == "desc" {
 			sort.SliceStable(folderList, func(i, j int) bool {
 				return folderList[i].CreatedAt.After(folderList[j].CreatedAt)
 			})
+		} else {
+			return []models.Folder{}, fmt.Errorf("Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]")
 		}
+	default:
+		return []models.Folder{}, fmt.Errorf("Usage: list-folders [username] [--sort-name|--sort-created] [asc|desc]")
 	}
+
 	return folderList, nil
 }
 
