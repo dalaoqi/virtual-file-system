@@ -6,18 +6,19 @@ import (
 )
 
 var (
-	re *regexp.Regexp
+	re      *regexp.Regexp
+	pattern = `(?m)^([a-zA-Z0-9][^*/><?\"|:]*)$`
 )
 
 func init() {
 	// Regular expression to match invalid characters
-	re = regexp.MustCompile(`(?m)[^a-zA-Z0-9 ]+`)
+	re = regexp.MustCompile(pattern)
 }
 
 // Check if the given string contains invalid characters
 func ExistInvalidChars(str string) bool {
 	match := re.FindAllString(str, -1)
-	return len(match) > 0
+	return len(match) == 0
 }
 
 // Split the input into individual arguments while preserving quoted strings

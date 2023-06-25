@@ -37,8 +37,8 @@ func TestUserRegister(t *testing.T) {
 		{
 			name:       "Add a user with invalid chars",
 			users:      map[string]models.User{},
-			targetName: "dalaoqi&^%$#.",
-			expected:   "Error: The dalaoqi&^%$#. contains invalid chars.",
+			targetName: "dalaoqi&^%$?#.",
+			expected:   "Error: The dalaoqi&^%$?#. contains invalid chars.",
 		},
 	}
 	for _, test := range testCases {
