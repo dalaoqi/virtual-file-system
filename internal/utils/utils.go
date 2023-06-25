@@ -11,7 +11,7 @@ var (
 
 func init() {
 	// Regular expression to match invalid characters
-	re = regexp.MustCompile(`(?m)[^a-zA-Z0-9]+`)
+	re = regexp.MustCompile(`(?m)[^a-zA-Z0-9 ]+`)
 }
 
 // Check if the given string contains invalid characters
