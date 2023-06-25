@@ -59,10 +59,10 @@ The following restrictions apply to the arguments `[username]`, `[foldername]`, 
 Here are some example commands and their usage:
 
 - Register a user: `register dalaoqi`, `register "dalaoqi is awesome"`
-- Create a folder: `create-folder dalaoqi docs`, `create-folder dalaoqi "meeting docs"`
+- Create a folder: `create-folder dalaoqi docs description`, `create-folder dalaoqi "meeting docs" "the docs description"`
 - Delete a folder: `delete-folder dalaoqi docs`
 - List folders: `list-folders dalaoqi --sort-name asc`
 
-- Create a file: `create-file dalaoqi docs test`, `create-file dalaoqi docs "test file"`
+- Create a file: `create-file dalaoqi docs test description`, `create-file dalaoqi docs "test file" "test file description"`
 - Delete a file: `delete-file dalaoqi docs test`
 - List files: `list-files dalaoqi docs --sort-created desc`
