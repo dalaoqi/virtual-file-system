@@ -65,7 +65,7 @@ func TestFileService_Creation(t *testing.T) {
 			expectedName: "myfile",
 		},
 		{
-			name: "Create a folder with invalid chars",
+			name: "Create a file with invalid chars",
 			users: map[string]models.User{"dalaoqi": {Name: "dalaoqi", Folders: map[string]models.Folder{"myfolder": {
 				Name:        "myfolder",
 				Description: "My folder description",
@@ -73,9 +73,9 @@ func TestFileService_Creation(t *testing.T) {
 			}}}},
 			targetUser:   "dalaoqi",
 			targetFolder: "myfolder",
-			targetFile:   "myfile^%$",
+			targetFile:   "myfile???",
 			description:  "My file description",
-			expectedErr:  "Error: The myfile^%$ contains invalid chars.",
+			expectedErr:  "Error: The myfile??? contains invalid chars.",
 			expectedLen:  0,
 			expectedName: "",
 		},

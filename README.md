@@ -45,7 +45,14 @@ The Virtual File System supports the following commands:
 - `delete-file [username] [foldername] [filename]`: Delete a file from the specified user's folder.
 - `list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]`: List all files in the specified user's folder, optionally sorting by name or creation date. The default sorting order is by name in ascending order.
 
-Note: If any of the arguments `[username]`, `[foldername]`, or `[filename]` contain whitespace characters, you can enclose them in double quotes.
+Note: 
+- If any of the arguments `[username]`, `[foldername]`, `[new-folder-name]`, or `[filename]` contain whitespace characters, you can enclose them in double quotes.
+
+### Restrictions
+
+The following restrictions apply to the arguments `[username]`, `[foldername]`, `[new-folder-name]`, and `[filename]`:
+
+- They should not contain the following characters: `*`, `/`, `>`, `<`, `?`, `\` and `|`.
 
 ## Examples
 
